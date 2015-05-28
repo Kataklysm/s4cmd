@@ -67,6 +67,7 @@ class Options:
   def __init__(self, opt = None):
     if opt == None: opt = False # Set opt to False as the default value for other options.
     self.s3cfg = opt.s3cfg if opt else None
+    self.host =  (opt and opt.host)
     self.recursive = (opt and opt.recursive != None)
     self.force = (opt and opt.force != None)
     self.sync_check = (opt and opt.sync_check != None)
@@ -525,6 +526,7 @@ class S3Handler(object):
         self.s3 = boto.connect_s3(S3Handler.S3_KEYS[0],
                                   S3Handler.S3_KEYS[1],
                                   is_secure = self.opt.use_ssl,
+				  host = opt.host,
                                   suppress_consec_slashes = False)
       else:
         self.s3 = boto.connect_s3(is_secure = self.opt.use_ssl,
@@ -1386,6 +1388,7 @@ if __name__ == '__main__':
   # Parser for command line options.
   parser = optparse.OptionParser(description = 'Super S3 command line tool. Version %s' % S4CMD_VERSION)
   parser.add_option('-p', '--config', help = 'path to s3cfg config file', dest = 's3cfg', type = 'string', default = None)
+  parser.add_option('--host', help = "Name server addresses", dest = 'host', type= 'string',default = "amazonaws.com")
   parser.add_option('-f', '--force', help = 'force overwrite files when download or upload', dest = 'force', action = 'store_true')
   parser.add_option('-r', '--recursive', help = 'recursively checking subdirectories', dest = 'recursive', action = 'store_true')
   parser.add_option('-D', '--delete-removed', help = 'delete remote files that do not exist locally', dest = 'delete_removed', action = 'store_true')
@@ -1462,3 +1465,4 @@ if __name__ == '__main__':
 #   - 1.5.19: Set socket.setdefaulttimeout() to prevent boto/s3 socket read block in httplib.
 #   - 1.5.20: Merge change from oniltonmaciel@github for arguments for multi-part upload.
 #             Fix setup.py for module and command line tool
+#   - 1.5.21: Added argument '--host', for non-Amazon.
